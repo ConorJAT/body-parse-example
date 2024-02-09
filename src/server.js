@@ -20,8 +20,20 @@ const parseBody = (request, response, handler) => {
   });
 
   request.on('end', () => {
+    // application/x-www-form-urlencoded (key1=value1&key2=value2)
     const bodyString = Buffer.concat(body).toString();
-    console.log(bodyString);
+    let bodyParams;
+
+    if (request.headers['content-type'] === 'application/json') {
+      bodyParams = JSON.parse(bodyString);
+    } else {
+      bodyParams = query.parse(bodyString);
+    }
+    
+    //console.log(bodyString);
+    //console.log(bodyParams);
+
+    handler(request, response, bodyParams);
   });
 };
 

@@ -5,7 +5,7 @@
   <link rel="stylesheet" type="text/css" href="/style.css">
   
   <script>
-    const handleResponse = (response) => {
+    const handleResponse = async (response) => {
       const content = document.querySelector('#content');
       
       switch(response.status) {
@@ -26,10 +26,29 @@
           break;
       }
       
+      const resText = await response.text();
+      content.innerHTML += `<p>${resText}</p>`;
     };
 
-    const sendPost = (nameForm) => {
+    const sendPost = async (nameForm) => {
+      const url = nameForm.getAttribute('action');      // /addUser
+      const method = nameForm.getAttribute('method');   // POST
 
+      const name = nameForm.querySelector('#nameField').value;
+      const age = nameForm.querySelector('#ageField').value;
+
+      const formData = `name=${name}&age=${age}`;
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/x-www-form-urlenconded'
+        },
+        body: formData
+      });
+
+      handleResponse(response);
     };
 
     const init = () => {
@@ -41,7 +60,7 @@
         return false;
       }
       
-      //nameForm.addEventListener('submit', addUser);
+      nameForm.addEventListener('submit', addUser);
     };
 
     window.onload = init;
